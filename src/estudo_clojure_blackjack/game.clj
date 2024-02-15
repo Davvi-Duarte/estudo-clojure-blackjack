@@ -79,10 +79,30 @@
     {:player-name nomejogador
      :cards [carta1 carta2]
      :points points}
-
      )
   )
 
 ;teste geracao jogador
-(card/print-player (player "Davvi"))
-(card/print-player (player "Vanessa"))
+;(card/print-player (player "Davvi"))
+;(card/print-player (player "Vanessa"))
+
+
+
+
+;chama a funcao para gerar nova carta
+;atualiza vetor dentro do player com a nova carta
+;calcula os pontos da nova mao
+;retorna um novo jogador
+;(conj) adiciona um novo valor para um vetor
+;(assoc) associa um valor á um mapa
+;o (update) faz isso de forma mais enxuta
+(defn mais-cartas
+  "define logica de puxar mais uma carta"
+  [player]
+  (let [carta (geracarta)
+        cartas (conj (:cards player) carta)
+        player-novo (update player :cards conj carta)
+        novos-pontos (pontos-cartas cartas)]
+    (assoc player-novo :points novos-pontos)))
+(def player (player "Davvi Duarte"))
+(card/print-player (mais-cartas player))
