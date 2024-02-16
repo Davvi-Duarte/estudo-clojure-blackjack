@@ -16,7 +16,6 @@
   "funcao que define um jogador e utiliza a funcao gera carta para definiar a mao inicial"
   [nomejogador]
 
-
   ;----------------------------------------------------------------------------------------------
   ;(def carta-1 (geracarta))
   ;(def carta-2 (geracarta))
@@ -102,7 +101,46 @@
   (let [carta (geracarta)
         cartas (conj (:cards player) carta)
         player-novo (update player :cards conj carta)
-        novos-pontos (pontos-cartas cartas)]
-    (assoc player-novo :points novos-pontos)))
+        points (pontos-cartas cartas)]
+    (assoc player-novo :points points)))
+
+;(readline) ler do teclado
+(defn decisao-player
+  "indica a decisao d player de comprar ou nao uma carta"
+  [player]
+  (= (read-line) "sim" ) )
+
+(defn decisao-dealer
+  "indica a decisao do dealer de comprar ou nao uma carta comparando os pontos entre o dealer e o player"
+  [player-points dealer]
+  (let [dealer-points (:points dealer)]
+    (< dealer-points player-points )))
+
+
+(defn game
+  "funcao game. Serve para ter a logica de rodadas e turnos, basicamente o coracao do jogo :)"
+  [player fn-decisao-continuar]
+    (println (:player-name player )": Mais cartas?")
+    (if (fn-decisao-continuar player)
+      (let [player-comprou-carta (mais-cartas player)]
+            (card/print-player player-comprou-carta)
+            (recur player-comprou-carta fn-decisao-continuar))
+      player)
+  )
+
+
+
+;definicao do Dealer
+(def dealer (player "Dealer"))
+
+
+;definicao do player
 (def player (player "Davvi Duarte"))
-(card/print-player (mais-cartas player))
+(card/print-player dealer)
+(card/print-player player)
+
+(def player-after-game (game player decisao-player) )
+
+;(partial) chama a funcao decisao dealer parcialmente passando os pontos do player
+(game dealer (partial decisao-dealer (:points player-after-game)))
+
