@@ -128,19 +128,42 @@
       player)
   )
 
+;(cond) para o caso de ter muitas condicionais
+(defn verifica-vitoria
+  "verifica as condicoes de vitoria e imprime na tela o resultado com as cartas e a pontuacao."
+  [player dealer]
+  (let [pontos-player (:points player)
+        pontos-dealer (:points dealer)
+        nome-player (:player-name player)
+        nome-dealer (:player-name dealer)
+        mensagem (cond
+                   (and (> pontos-player 21) (> pontos-dealer 21)) "Ninguém venceu!"
+                   (= pontos-player pontos-dealer) "empatou"
+                   (> pontos-player 21) (str nome-dealer " ganhou")
+                   (> pontos-dealer 21) (str nome-player " ganhou")
+                   (> pontos-player pontos-dealer) (str nome-player " ganhou")
+                   (> pontos-dealer pontos-player) (str nome-dealer " ganhou"))]
+    (card/print-player dealer)
+    (card/print-player player)
+    (print mensagem)))
 
 
-;definicao do Dealer
+;definicao do Dealer e do PLayer na fase inicial do jogo
 (def dealer (player "Dealer"))
-
-
 ;definicao do player
 (def player (player "Davvi Duarte"))
 (card/print-player dealer)
 (card/print-player player)
 
-(def player-after-game (game player decisao-player) )
+
+;define o player apois a jogada (para nao conflitar com a definicao inicial do player)
+(def player-depois-game (game player decisao-player) )
 
 ;(partial) chama a funcao decisao dealer parcialmente passando os pontos do player
-(game dealer (partial decisao-dealer (:points player-after-game)))
+(def partial-decisao-dealer (partial decisao-dealer (:points player-depois-game)))
 
+;define o dealer apois a jogada (para nao conflitar com a definicao inicial do dealer)
+(def dealer-depois-game (game dealer partial-decisao-dealer))
+
+;chama a funcao de vitoria depois da execucao das rodadas
+(verifica-vitoria player-depois-game dealer-depois-game)
